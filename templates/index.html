@@ -60,7 +60,7 @@
                          class="w-full h-32 object-cover rounded-lg mb-2">
                     <h3 class="font-semibold text-gray-800">{{ item.nama }}</h3>
                     <p class="text-orange-600 font-bold text-sm mb-3">Rp {{ "{:,}".format(item.harga).replace(',', '.') }}</p>
-                    <button onclick="addToCart('{{ item.nama }}', {{ item.harga }})" 
+                    <button onclick="addToCart('{{ item.nama }}', {{ item.harga }}, this)" 
                             class="w-full py-1 bg-orange-500 text-white rounded-lg text-sm {{ 'opacity-50 cursor-not-allowed' if item.tersedia == 0 }}"
                             {% if item.tersedia == 0 %}disabled{% endif %}>Pesan</button>
                 </div>
@@ -108,14 +108,39 @@
             btn.classList.add('bg-orange-600', 'text-white');
         }
 
-        function addToCart(name, price) {
-            if (!cart[name]) {
-                cart[name] = { price: price, qty: 1 };
-            } else {
-                cart[name].qty += 1;
-            }
-            document.getElementById('cart-count').innerText = Object.values(cart).reduce((a, b) => a + b.qty, 0);
-        }
+        function addToCart(name, price, btn) {
+    // 1. Tambahkan ke keranjang
+    if (!cart[name]) {
+        cart[name] = { price: price, qty: 1 };
+    } else {
+        cart[name].qty += 1;
+    }
+    document.getElementById('cart-count').innerText = Object.values(cart).reduce((a, b) => a + b.qty, 0);
+
+    // 2. Disable tombol sementara
+    btn.disabled = true;
+    btn.classList.add('opacity-50');
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50');
+    }, 500);
+
+    // 3. Munculkan notifikasi (Toast)
+    showToast(`"${name}" dimasukkan ke keranjang`);
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toast-message');
+    
+    toastMsg.innerText = message;
+    toast.classList.remove('hidden');
+    
+    // Hilangkan otomatis setelah 2 detik
+    setTimeout(() => {
+        toast.classList.add('hidden');
+    }, 2000);
+}
 
         function sendToWhatsApp() {
             if (Object.keys(cart).length === 0) {
@@ -155,5 +180,10 @@
             closeDialog();
         }
     </script>
+
+    <div id="toast" class="hidden fixed bottom-20 left-4 right-4 bg-gray-800 text-white text-center py-3 rounded-xl shadow-lg z-50 transition-all animate-bounce">
+        <span id="toast-message"></span>
+    </div>
+
 </body>
 </html>
