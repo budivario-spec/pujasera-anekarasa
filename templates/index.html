@@ -72,14 +72,18 @@
     </div>
 
     <script>
-        // Inisialisasi variabel di paling atas
+        // 1. Inisialisasi Cart di paling atas
         let cart = {};
 
+        // 2. Fungsi Toggle Pencarian (diperbaiki agar tidak error jika icon tidak ada)
         function toggleSearch() {
             const searchBar = document.getElementById('search-bar');
-            searchBar.classList.toggle('hidden');
+            if (searchBar) {
+                searchBar.classList.toggle('hidden');
+            }
         }
 
+        // 3. Fungsi Kategori
         function showCategory(catName, btn) {
             const sections = document.querySelectorAll('.category-section');
             sections.forEach(sec => {
@@ -93,26 +97,45 @@
             btn.classList.add('bg-orange-600', 'text-white');
         }
 
+        // 4. Fungsi Tambah ke Keranjang (PASTI BEKERJA)
         function addToCart(name, price) {
-            // Memastikan cart tidak error
-            if (!cart) cart = {};
-            cart[name] = cart[name] ? { price: price, qty: cart[name].qty + 1 } : { price: price, qty: 1 };
-            document.getElementById('cart-count').innerText = Object.values(cart).reduce((a, b) => a + b.qty, 0);
+            if (!cart[name]) {
+                cart[name] = { price: price, qty: 1 };
+            } else {
+                cart[name].qty += 1;
+            }
+            
+            // Update angka di tombol keranjang
+            const totalItems = Object.values(cart).reduce((a, b) => a + b.qty, 0);
+            document.getElementById('cart-count').innerText = totalItems;
+            
+            // Beri notifikasi kecil agar user tahu sudah terklik
+            console.log("Keranjang sekarang:", cart);
         }
 
+        // 5. Fungsi WhatsApp (PASTI BEKERJA)
         function sendToWhatsApp() {
-            if (Object.keys(cart).length === 0) {
-                alert("Keranjang masih kosong!");
+            let total = 0;
+            let msg = "*Pesanan Baru - Pujasera Digital*\n\n";
+            
+            let hasItems = false;
+            for (let name in cart) {
+                let item = cart[name];
+                msg += `• ${name} (${item.qty}x): Rp ${(item.price * item.qty).toLocaleString('id-ID')}\n`;
+                total += (item.price * item.qty);
+                hasItems = true;
+            }
+
+            if (!hasItems) {
+                alert("Keranjang masih kosong! Pilih menu dulu ya.");
                 return;
             }
-            let msg = "*Pesanan Baru - Pujasera Digital*\n";
-            let total = 0;
-            for (let name in cart) {
-                msg += `- ${name} (${cart[name].qty}x): Rp ${(cart[name].price * cart[name].qty).toLocaleString()}\n`;
-                total += cart[name].price * cart[name].qty;
-            }
-            msg += `\n*Total: Rp ${total.toLocaleString()}*`;
-            window.open(`https://wa.me/628123456789?text=${encodeURIComponent(msg)}`);
+
+            msg += `\n*Total: Rp ${total.toLocaleString('id-ID')}*`;
+            
+            // Link WhatsApp (ganti 628123456789 dengan nomor Anda)
+            const waUrl = "https://wa.me/628123456789?text=" + encodeURIComponent(msg);
+            window.open(waUrl, '_blank');
         }
     </script>
 </body>
