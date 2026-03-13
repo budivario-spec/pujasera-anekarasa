@@ -219,12 +219,30 @@ function confirmOrder() {
 
     if (!name || !address) return alert("Mohon isi Nama dan Alamat!");
 
-    let message = `*Struk Pesanan Anekarasa*\nNama: ${name}\nAlamat: ${address}\n\n`;
-    // ... sisa kode loop pesanan Anda ...
-    
-    // GANTI nomor di bawah ini dengan nomor asli Anda!
+    // 1. Judul dan Identitas
+    let message = `*Pesanan Baru - Pujasera Anekarasa*\n\n`;
+    message += `*Nama:* ${name}\n`;
+    message += `*Alamat:* ${address}\n\n`;
+    message += `*Daftar Pesanan:*\n`;
+
+    // 2. Loop untuk memasukkan daftar item, jumlah, dan subtotal
+    let totalTagihan = 0;
+    for (let name in cart) {
+        let item = cart[name];
+        let subtotal = item.price * item.qty;
+        message += `• ${name} (${item.qty}x): Rp ${subtotal.toLocaleString('id-ID')}\n`;
+        totalTagihan += subtotal;
+    }
+
+    // 3. Menambahkan Total Harga
+    message += `\n*Total Bayar: Rp ${totalTagihan.toLocaleString('id-ID')}*`;
+
+    // Kirim ke WhatsApp
     const waLink = `https://wa.me/6281244397735?text=${encodeURIComponent(message)}`;
     window.open(waLink, '_blank');
+    
+    // Opsional: Tutup dialog
+    document.getElementById('checkout-dialog').close();
 }
     </script>
 
