@@ -219,13 +219,20 @@ function confirmOrder() {
 
     if (!name || !address) return alert("Mohon isi Nama dan Alamat!");
 
-    // 1. Judul dan Identitas
-    let message = `*Pesanan Baru - Pujasera Anekarasa*\n\n`;
+    // 1. Membuat ID Unik Pesanan (Contoh: ORD-260313-1234)
+    const now = new Date();
+    const dateStr = now.toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD
+    const timeStr = now.getHours().toString() + now.getMinutes().toString() + now.getSeconds().toString();
+    const orderId = `ORD-${dateStr}-${timeStr}`;
+
+    // 2. Judul dan Identitas dengan ID Pesanan
+    let message = `*Pesanan Baru - Pujasera Anekarasa*\n`;
+    message += `*ID Pesanan:* ${orderId}\n\n`;
     message += `*Nama:* ${name}\n`;
     message += `*Alamat:* ${address}\n\n`;
     message += `*Daftar Pesanan:*\n`;
 
-    // 2. Loop untuk memasukkan daftar item, jumlah, dan subtotal
+    // 3. Loop item
     let totalTagihan = 0;
     for (let name in cart) {
         let item = cart[name];
@@ -234,10 +241,9 @@ function confirmOrder() {
         totalTagihan += subtotal;
     }
 
-    // 3. Menambahkan Total Harga
     message += `\n*Total Bayar: Rp ${totalTagihan.toLocaleString('id-ID')}*`;
 
-    // Kirim ke WhatsApp
+    // 4. Kirim ke WhatsApp
     const waLink = `https://wa.me/6281244397735?text=${encodeURIComponent(message)}`;
     window.open(waLink, '_blank');
     
