@@ -12,7 +12,25 @@
 </head>
 <body class="bg-gray-50 pb-24">
     <header class="bg-white p-4 shadow-sm sticky top-0 z-30">
-        <h1 class="text-xl font-bold text-orange-600 text-center">Pujasera Anekarasa</h1>
+    <div class="flex items-center justify-between mb-4">
+        <a href="/" class="text-2xl">🏠</a>
+        <h1 class="text-xl font-bold text-orange-600">Pujasera Anekarasa</h1>
+        <button onclick="toggleSearch()" class="text-2xl">🔍</button>
+    </div>
+
+    <div id="search-bar" class="hidden mb-4">
+        <input type="text" onkeyup="filterMenu(this.value)" placeholder="Cari menu favorit..." 
+               class="w-full p-3 rounded-xl border border-gray-200 shadow-sm focus:ring-2 focus:ring-orange-500 outline-none">
+    </div>
+
+    <div class="overflow-x-auto whitespace-nowrap scrollbar-hide py-2">
+        <button onclick="showCategory('semua', this)" class="category-tab px-5 py-1.5 bg-orange-600 text-white rounded-md text-sm font-bold shadow-md mr-1 transition-all">Semua</button>
+        {% for cat_name in categories.keys() %}
+        <button onclick="showCategory('{{ cat_name }}', this)" class="category-tab px-5 py-1.5 bg-white text-gray-600 rounded-md text-sm font-bold shadow-md mr-1 transition-all border border-gray-200">
+            {{ cat_name|capitalize }}
+        </button>
+        {% endfor %}
+    </div>
     </header>
 
     <main class="p-4 space-y-8" id="menu-container">
